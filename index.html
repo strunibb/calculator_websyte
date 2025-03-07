@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Онлайн школа "Струны Будущего"</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+            padding: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-message {
+            max-width: 800px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .teachers-section {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 30px auto;
+            max-width: 1200px;
+        }
+
+        .teacher-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .teacher-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #8A2BE2;
+            margin: 0 auto 15px;
+        }
+
+        .teacher-video {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 16/9;
+        }
+
+        .students-section {
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px auto;
+            max-width: 1200px;
+        }
+
+        .student-video {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 16/9;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            display: none;
+            margin: 20px auto;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .active-step {
+            display: block;
+        }
+
+        h1, h2 {
+            color: #ffffff;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 40px;
+        }
+
+        .subscription-type {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .subscription-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #8A2BE2, #4B0082);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            line-height: 1.4;
+        }
+
+        .subscription-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #9400D3, #483D8B);
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .teacher-photo {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .students-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 20px;
+                margin: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .teachers-grid {
+                grid-template-columns: repeat(3, 250px);
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 15px;
+                scroll-snap-type: x mandatory;
+                grid-auto-columns: minmax(250px, 1fr);
+                justify-content: start;
+            }
+        
+            .teacher-card {
+                scroll-snap-align: start;
+                min-width: 250px;
+            }
+
+            .teacher-photo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .students-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .subscription-btn {
+                font-size: 14px;
+                padding: 12px;
+                border-radius: 12px;
+            }
+
+            .user-info input {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 1.3em;
+                margin-bottom: 25px;
+            }
+
+            .container {
+                padding: 15px;
+                margin: 10px;
+                border-radius: 15px;
+            }
+        }
+
+        /* Остальные стили */
+        .lessons-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .lesson-option {
+            padding: 15px;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fff;
+            color: #2e7d32;
+            line-height: 1.4;
+        }
+
+        .lesson-option.selected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .teacher-counter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .counter-btn:disabled {
+            background: #a5d6a7;
+            cursor: not-allowed;
+        }
+
+        .payment-info {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            background: #e8f5e9;
+            border-radius: 15px;
+        }
+
+        #confirmButton {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #confirmButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .user-info {
+            margin: 25px 0;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 15px;
+        }
+
+        .user-info input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .user-info input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        .navigation-buttons {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #388E3C;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-overlay">
+        <div class="welcome-message">
+            <h1>🎸 Привет от Никиты из онлайн-школы "Струны будущего"!</h1>
+            <p>
+                Здесь вы можете выбрать подходящий абонемент:<br><br>
+                🎵 <strong>Личный</strong> - занятия только с Никитой<br>
+                🎸 <strong>Комбо</strong> - занятия с Никитой + Даниилом(гитара) или Ксения(вокал)<br>
+                🎶 <strong>Парный</strong> - 2 личных + 2 парных занятия<br>
+                🎥 <strong>Видеокурс</strong> - "Освой гитару за 1 месяц" с поддержкой<br>
+                📜 <strong>Разборы песен</strong> - 250+ песен с объяснением
+            </p>
+        </div>
+
+        <div class="teachers-section">
+            <h2>Наши преподаватели</h2>
+            <div class="teachers-grid">
+                <!-- Никита -->
+                <div class="teacher-card">
+                    <img src="images/nikita.jpg" alt="Никита - гитара" class="teacher-photo">
+                    <video class="teacher-video" controls poster="images/nikita-preview.jpg">
+                        <source src="videos/nikita.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <h3>Никита</h3>
+                    <p>Основатель школы. Гитара<br>Стаж: 8 лет</p>
+                </div>
+
+                <!-- Даниил -->
+                <div class="teacher-card">
+                    <img src="images/daniil.jpg" alt="Даниил - гитара" class="teacher-photo">
+                    <video class="teacher-video" controls poster="images/daniil-preview.jpg">
+                        <source src="videos/daniil.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <h3>Даниил</h3>
+                    <p>Гитара и электрогитара<br>Стаж: 5 лет</p>
+                </div>
+
+                <!-- Ксения -->
+                <div class="teacher-card">
+                    <img src="images/ksenia.jpg" alt="Ксения - вокал" class="teacher-photo">
+                    <video class="teacher-video" controls poster="images/ksenia-preview.jpg">
+                        <source src="videos/ksenia.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <h3>Ксения</h3>
+                    <p>Вокал<br>Стаж: 6 лет</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="students-section">
+            <h2>Посмотрите на результаты наших учеников!</h2>
+            <div class="students-grid">
+                <!-- Видео учеников -->
+                <video class="student-video" controls poster="images/student1-preview.jpg">
+                    <source src="videos/student1.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student2-preview.jpg">
+                    <source src="videos/student2.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student3-preview.jpg">
+                    <source src="videos/student3.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student4-preview.jpg">
+                    <source src="videos/student4.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student5-preview.jpg">
+                    <source src="videos/student5.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student6-preview.jpg">
+                    <source src="videos/student6.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student7-preview.jpg">
+                    <source src="videos/student7.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student8-preview.jpg">
+                    <source src="videos/student8.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student9-preview.jpg">
+                    <source src="videos/student9.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student10-preview.jpg">
+                    <source src="videos/student10.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="subscription-btn" onclick="startApp()">Выбрать абонемент</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Шаг 1: Выбор абонемента -->
+        <div class="step active-step" id="step1">
+            <h2>Выберите тип абонемента</h2>
+            <div class="subscription-type">
+                <div class="subscription-btn" onclick="selectSubscription('personal1')">
+                    Личный 1 месяц<br>
+                    4 занятия (897р) - 3.590р<br>
+                    6 занятий (865р) - 5.190р<br>
+                    8 занятий (849р) - 6.790р
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('personal3')">
+                    Личный 3 месяца<br>
+                    4 занятия (860р) - 10.290р<br>
+                    6 занятий (850р) - 15.290р<br>
+                    8 занятий (840р) - 20.190р<br>
+                    ВЫГОДА ДО 10%!
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('pair')">
+                    2 Парных + 2 Личных занятия (2.690р)
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('combo')">
+                    Комбо (2.990-6.380р) (747-797р)
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('video_course')">
+                    Видеокурс "Освой гитару за 1 месяц"<br>
+                    С постоянной поддержкой преподавателя<br>
+                    2.690₽
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('songs')">
+                    Полные разборы 250+ песен<br>
+                    С подробным объяснением<br>
+                    1.590₽
+                </div>
+            </div>
+        </div>
+
+        <!-- Шаг 2: Настройка параметров -->
+        <div class="step" id="step2">
+            <h2 id="stepTitle"></h2>
+            <div id="optionsContent"></div>
+            <div class="navigation-buttons">
+                <button class="nav-btn" onclick="showStep(1)">Назад</button>
+            </div>
+        </div>
+
+        <!-- Шаг 3: Данные пользователя и оплата -->
+        <div class="step" id="step3">
+            <div class="user-info">
+                <input type="text" id="firstName" placeholder="Ваше имя">
+                <input type="text" id="lastName" placeholder="Ваша фамилия">
+            </div>
+            <div class="payment-info">
+                <h2>Данные для оформления</h2>
+                <p>Номер телефона: +79220566724</p>
+                <p>Сумма к оплате: <strong id="finalAmount">0</strong> ₽</p>
+                <div class="navigation-buttons">
+                    <button class="nav-btn" onclick="showStep(2)">Назад</button>
+                    <button id="confirmButton" onclick="sendPaymentConfirmation()">Выбрать этот абонемент</button>
+                </div>
+                <p id="paymentStatus"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '7598736914:AAHVJUOt7okTfMh1VE_l1ZrCqaXv-r1PcWI';
+        const ADMIN_CHAT_ID = '725158536';
+        
+        let currentData = {
+            type: '',
+            price: 0,
+            details: {},
+            user: { firstName: '', lastName: '' }
+        };
+
+        const prices = {
+            personal1: {4: 3590, 6: 5190, 8: 6790},
+            personal3: {4: 10290, 6: 15290, 8: 20190},
+            pair: 2690,
+            combo: { nikita: 845, daniil: 690, ksenia: 750 },
+            video_course: 2690,
+            songs: 1590
+        };
+
+        function startApp() {
+            document.querySelector('.welcome-overlay').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+        }
+
+        function selectSubscription(type) {
+            currentData.type = type;
+            
+            if(type === 'video_course' || type === 'songs') {
+                currentData.price = prices[type];
+                showPayment();
+                return;
+            }
+            
+            showStep(2);
+            
+            let content = '';
+            if(type === 'combo') {
+                content = `
+                    <div class="lessons-selector">
+                        <div class="lesson-option" onclick="selectComboTotal(4)">4 занятия</div>
+                        <div class="lesson-option" onclick="selectComboTotal(6)">6 занятий</div>
+                        <div class="lesson-option" onclick="selectComboTotal(8)">8 занятий</div>
+                    </div>
+                    <div id="comboDistribution" style="display: none;">
+                        <div class="teacher-counter">
+                            <span>Никита (автоматически):</span>
+                            <span id="autoNikita">0</span>
+                        </div>
+                        <div class="teacher-counter">
+                            <span>Никита (автоматически):</span>
+                            <span id="autoNikita">0</span>
+                        </div>
+                        <div class="teacher-counter">
+                            <span>Даниил:</span>
+                            <div>
+                                <button class="counter-btn" onclick="updateCounter('daniil', -1)">-</button>
+                                <span id="daniilCount">0</span>
+                                <button class="counter-btn" onclick="updateCounter('daniil', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="teacher-counter">
+                            <span>Ксения:</span>
+                            <div>
+                                <button class="counter-btn" onclick="updateCounter('ksenia', -1)">-</button>
+                                <span id="kseniaCount">0</span>
+                                <button class="counter-btn" onclick="updateCounter('ksenia', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="nav-btn" onclick="calculatePrice()" style="margin-top: 20px;">Рассчитать стоимость</button>
+                `;
+                document.getElementById('stepTitle').textContent = 'Выберите общее количество занятий в месяц (автоматически распределено 2/3/4 занятия с Никитой) ';
+            } 
+            else if(type.includes('personal')) {
+                content = `
+                    <h3>Выберите количество занятий в месяц:</h3>
+                    <div class="lessons-selector">
+                        ${[4, 6, 8].map(lessons => {
+                            const totalPrice = prices[type][lessons];
+                            const pricePerLesson = type === 'personal1' 
+                                ? Math.round(totalPrice / lessons)
+                                : Math.round(totalPrice / (lessons * 3));
+                            
+                            return `
+                                <div class="lesson-option" 
+                                    onclick="selectPersonalLessons(${lessons}, '${type}')">
+                                    ${lessons} занятий<br>
+                                    ${totalPrice} ₽<br>
+                                    (${pricePerLesson}р/занятие)
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                document.getElementById('stepTitle').textContent = 'Настройка абонемента';
+            } 
+            else {
+                currentData.price = prices.pair;
+                showPayment();
+            }
+            
+            document.getElementById('optionsContent').innerHTML = content;
+        }
+
+        function selectComboTotal(total) {
+            currentData.details = {
+                total: total,
+                nikita: total === 4 ? 2 : total === 6 ? 3 : 4,
+                daniil: 0,
+                ksenia: 0
+            };
+            
+            document.getElementById('comboDistribution').style.display = 'block';
+            document.getElementById('autoNikita').textContent = currentData.details.nikita;
+            document.querySelectorAll('.lesson-option').forEach(opt => 
+                opt.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function updateCounter(teacher, delta) {
+            const newValue = currentData.details[teacher] + delta;
+            const max = currentData.details.total - currentData.details.nikita;
+            
+            if(newValue >= 0 && (currentData.details.daniil + currentData.details.ksenia + delta) <= max) {
+                currentData.details[teacher] = newValue;
+                document.getElementById(`${teacher}Count`).textContent = newValue;
+            }
+        }
+
+        function selectPersonalLessons(lessons, type) {
+            currentData.price = prices[type][lessons];
+            document.querySelectorAll('.lesson-option').forEach(opt => 
+                opt.classList.remove('selected'));
+            event.target.classList.add('selected');
+            showPayment();
+        }
+
+        function calculatePrice() {
+            if(currentData.type === 'combo') {
+                if(!currentData.details.total) {
+                    alert("Выберите общее количество занятий!");
+                    return;
+                }
+                
+                const totalOthers = currentData.details.daniil + currentData.details.ksenia;
+                if(totalOthers === 0) {
+                    alert("Распределите занятия между преподавателями!");
+                    return;
+                }
+                
+                currentData.price = (currentData.details.nikita * 845) +
+                                   (currentData.details.daniil * 690) +
+                                   (currentData.details.ksenia * 750);
+            }
+            showPayment();
+        }
+
+        function showPayment() {
+            document.getElementById('finalAmount').textContent = currentData.price;
+            showStep(3);
+        }
+
+        function showStep(stepNumber) {
+            if(stepNumber === 1) {
+                currentData = {
+                    type: '',
+                    price: 0,
+                    details: {},
+                    user: { firstName: '', lastName: '' }
+                };
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+            }
+            
+            document.querySelectorAll('.step').forEach(step => 
+                step.classList.remove('active-step'));
+            document.getElementById(`step${stepNumber}`).classList.add('active-step');
+        }
+
+        async function sendPaymentConfirmation() {
+            currentData.user.firstName = document.getElementById('firstName').value.trim();
+            currentData.user.lastName = document.getElementById('lastName').value.trim();
+            
+            if(!currentData.user.firstName || !currentData.user.lastName) {
+                alert("Пожалуйста, заполните все поля!");
+                return;
+            }
+
+            let message = `🎻 Новая заявка от ${currentData.user.firstName} ${currentData.user.lastName}\n`;
+            message += `Тип абонемента: ${currentData.type}\n`;
+            
+            if(currentData.type === 'combo') {
+                message += `Общее занятий: ${currentData.details.total}\n` +
+                          `Никита: ${currentData.details.nikita}\n` +
+                          `Даниил: ${currentData.details.daniil}\n` +
+                          `Ксения: ${currentData.details.ksenia}\n`;
+            } else if(currentData.type.includes('personal')) {
+                message += `Количество занятий: ${Object.keys(prices[currentData.type]).find(key => prices[currentData.type][key] === currentData.price)}\n`;
+            }
+            
+            message += `Сумма: ${currentData.price} ₽`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: ADMIN_CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+
+                document.getElementById('paymentStatus').innerHTML = 
+                    '✅ Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.';
+                document.getElementById('confirmButton').disabled = true;
+            } catch (error) {
+                alert('Ошибка отправки. Пожалуйста, свяжитесь с нами напрямую.');
+            }
+        }
+    </script>
+    <div class="container">
+        <!-- Шаг 1: Выбор абонемента -->
+        <div class="step active-step" id="step1">
+            <h2>Выберите тип абонемента</h2>
+            <div class="subscription-type">
+                <div class="subscription-btn" onclick="selectSubscription('personal1')">
+                    Личный 1 месяц<br>
+                    4 занятия (897р) - 3.590р<br>
+                    6 занятий (865р) - 5.190р<br>
+                    8 занятий (849р) - 6.790р
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('personal3')">
+                    Личный 3 месяца<br>
+                    4 занятия (860р) - 10.290р<br>
+                    6 занятий (850р) - 15.290р<br>
+                    8 занятий (840р) - 20.190р<br>
+                    ВЫГОДА ДО 10%!
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('pair')">
+                    2 Парных + 2 Личных занятия (2.690р)
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('combo')">
+                    Комбо (2.990-6.380р) (747-797р)
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('video_course')">
+                    Видеокурс "Освой гитару за 1 месяц"<br>
+                    С постоянной поддержкой преподавателя<br>
+                    2.690₽
+                </div>
+                <div class="subscription-btn" onclick="selectSubscription('songs')">
+                    Полные разборы 250+ песен<br>
+                    С подробным объяснением<br>
+                    1.590₽
+                </div>
+            </div>
+        </div>
+    
+        <!-- Шаг 2: Настройка параметров -->
+        <div class="step" id="step2">
+            <h2 id="stepTitle"></h2>
+            <div id="optionsContent"></div>
+            <div class="navigation-buttons">
+                <button class="nav-btn" onclick="showStep(1)">Назад</button>
+            </div>
+        </div>
+    
+        <!-- Шаг 3: Данные пользователя и оплата -->
+        <div class="step" id="step3">
+            <div class="user-info">
+                <input type="text" id="firstName" placeholder="Ваше имя">
+                <input type="text" id="lastName" placeholder="Ваша фамилия">
+            </div>
+            <div class="payment-info">
+                <h2>Данные для оформления</h2>
+                <p>Номер телефона: +79220566724</p>
+                <p>Сумма к оплате: <strong id="finalAmount">0</strong> ₽</p>
+                <div class="navigation-buttons">
+                    <button class="nav-btn" onclick="showStep(2)">Назад</button>
+                    <button id="confirmButton" onclick="sendPaymentConfirmation()">Выбрать этот абонемент</button>
+                </div>
+                <p id="paymentStatus"></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

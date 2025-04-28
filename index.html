@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Онлайн школа "Струны Будущего"</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #4B0082;
+            --accent-color: #FF6B6B;
+            --background-gradient: linear-gradient(135deg, #541f58, #3498db);
+            --card-gradient: linear-gradient(145deg, #6366f1, #a855f7);
+            --modal-background: rgba(198, 103, 103, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--background-gradient);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .welcome-overlay {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-message {
+            max-width: 800px;
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: var(--modal-background);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .teachers-section,
+        .students-section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .teachers-grid,
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px auto;
+            max-width: 1200px;
+        }
+
+        .teacher-card {
+            background: var(--card-gradient);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .teacher-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.05) 50%,
+                rgba(255,255,255,0.1) 100%);
+            z-index: 1;
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        }
+
+        .teacher-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.2);
+            margin: 0 auto 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .teacher-video,
+        .student-video {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+            aspect-ratio: 16/9;
+        }
+
+        .students-section {
+            background: linear-gradient(45deg, #903cb2, #5483d4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto 20px;
+            padding: 40px;
+            background: var(--modal-background);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2 {
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #fff;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .subscription-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .subscription-card {
+            background: var(--card-gradient);
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subscription-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .subscription-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.05) 50%,
+                rgba(255,255,255,0.1) 100%);
+            transform: rotate(45deg);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: var(--modal-background);
+            padding: 40px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 600px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            animation: modalEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        @keyframes modalEnter {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--secondary);
+            transform: rotate(90deg);
+        }
+
+        .counter-section {
+            margin: 1.5rem 0;
+        }
+
+        .counter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .counter-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .time-select-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .time-select-btn:hover {
+            background: #3aa89f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .welcome-message, .teachers-section, .students-section {
+                padding: 1.5rem;
+            }
+
+            .teacher-photo {
+                width: 140px;
+                height: 140px;
+            }
+
+            .subscription-card {
+                padding: 1.5rem;
+            }
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--light);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-overlay">
+        <div class="welcome-message">
+            <h1>🎸 Музыкальная школа "Струны будущего"!🎙</h1>
+        </div>
+
+        <div class="teachers-section">
+            <h2>Наши преподаватели</h2>
+            <div class="teachers-grid">
+                <div class="teacher-card">
+                    <img src="images/daniil.jpg" alt="Мария - гитара" class="teacher-photo">
+                    <video class="teacher-video" controls poster="images/daniil-preview.jpg">
+                        <source src="videos/daniil.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <h3>Мария</h3>
+                    <p>Гитара и электрогитара<br>Стаж: 5 лет</p>
+                </div>
+                
+                <div class="teacher-card">
+                    <img src="images/nikita.jpg" alt="Никита - гитара" class="teacher-photo">
+                    <video class="teacher-video" controls poster="images/nikita-preview.jpg">
+                        <source src="videos/nikita.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <h3>Никита</h3>
+                    <p>Основатель школы. Гитара, Электрогитара, Укулеле<br>Стаж: 8 лет</p>
+                </div>
+
+                <div class="teacher-card">
+                    <img src="images/ksenia.jpg" alt="Ксения - вокал" class="teacher-photo">
+                    <video class="teacher-video" controls poster="images/ksenia-preview.jpg">
+                        <source src="videos/ksenia.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <h3>Ксения</h3>
+                    <p>Вокал<br>Стаж: 6 лет</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="students-section">
+            <h2>Посмотрите видео с результатами наших учеников!</h2>
+            <div class="students-grid">
+                <video class="student-video" controls poster="images/student1-preview.jpg">
+                    <source src="videos/student1.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student2-preview.jpg">
+                    <source src="videos/student2.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student3-preview.jpg">
+                    <source src="videos/student3.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student4-preview.jpg">
+                    <source src="videos/student4.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student5-preview.jpg">
+                    <source src="videos/student5.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student6-preview.jpg">
+                    <source src="videos/student6.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student7-preview.jpg">
+                    <source src="videos/student7.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student8-preview.jpg">
+                    <source src="videos/student8.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student9-preview.jpg">
+                    <source src="videos/student9.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                <video class="student-video" controls poster="images/student10-preview.jpg">
+                    <source src="videos/student10.mp4" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+            </div>
+        </div>
+    </div> <!-- Закрытие welcome-overlay -->
+
+    <div class="container">
+        <h1>Выберите абонемент</h1>
+        <div class="subscription-grid">
+            <div class="subscription-card" data-type="personal1">
+                <h3>Личный на 1 месяц</h3>
+                <p>4 занятия (922р)- 3.690₽</p>
+                <p>6 занятий (881р) - 5.290₽</p>
+                <p>8 занятий (861р)- 6.890₽</p>
+            </div>
+
+            <div class="subscription-card" data-type="personal3">
+                <h3>Личный на 2 месяца</h3>
+                <p>8 занятий (898р) - 7.190₽</p>
+                <p>12 занятий (874р) - 10.490₽</p>
+                <p>16 занятий (849р) - 13.590₽</p>
+            </div>
+
+            <div class="subscription-card" data-type="pair">
+                <h3>Парный абонемент</h3>
+                <p>3 парных + 1 личное</p>
+                <p>2.490₽</p>
+            </div>
+
+            <div class="subscription-card" data-type="combo">
+                <h3>Комбо абонемент</h3>
+                <p>С разными преподавателями</p>
+                <p>от 2.990₽ до 6.380Р</p>
+            </div>
+
+            <div class="subscription-card" data-type="video_course">
+                <h3>Видеокурс "Освой гитару с нуля за 2 месяца" +2 ЛИЧНЫХ УРОКА В ПОДАРОК!</h3>
+                <p>3.990₽</p>
+            </div>
+
+            <div class="subscription-card" data-type="trial">
+                <h3>🎁 Бесплатное занятие</h3>
+                <p>Для новых учеников</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '7598736914:AAHVJUOt7okTfMh1VE_l1ZrCqaXv-r1PcWI';
+        const ADMIN_CHAT_ID = '725158536';
+        
+        const prices = {
+            personal1: {4: 3690, 6: 5290, 8: 6890},
+            personal3: {8: 7190, 12: 10490, 16: 13590},
+            pair: 2490,
+            combo: {nikita: 850, maria: 690, ksenia: 720},
+            video_course: 3990,
+            trial: 0
+        };
+
+        let currentSelection = {
+            type: null,
+            details: {},
+            price: 0
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.subscription-card').forEach(card => {
+                card.addEventListener('click', () => handleSubscriptionSelect(card.dataset.type));
+            });
+        });
+
+        function handleSubscriptionSelect(type) {
+            currentSelection.type = type;
+            
+            if (['pair', 'video_course', 'trial'].includes(type)) {
+                currentSelection.price = prices[type];
+                showPaymentScreen();
+                return;
+            }
+
+            if (type === 'combo') {
+                showComboSelection();
+                return;
+            }
+
+            if (type.includes('personal')) {
+                showPersonalOptions(type);
+            }
+        }
+
+        function showComboSelection() {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>Выберите преподавателей</h2>
+                <div class="counter-section">
+                    ${Object.entries(prices.combo).map(([teacher, price]) => `
+                        <div class="counter-row">
+                            <span>${teacher.charAt(0).toUpperCase() + teacher.slice(1)} (${price}₽/урок)</span>
+                            <div>
+                                <button class="counter-btn" onclick="updateCounter('${teacher}', -1)">-</button>
+                                <span id="${teacher}Counter">0</span>
+                                <button class="counter-btn" onclick="updateCounter('${teacher}', 1)">+</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="price-display">
+                    Итого: <span id="totalPrice">0</span>₽
+                </div>
+                <button id="confirmButton" onclick="calculateTotalPrice()">Продолжить</button>
+            `;
+            showModal();
+        }
+
+        function updateCounter(teacher, delta) {
+            const counter = document.getElementById(`${teacher}Counter`);
+            const currentValue = parseInt(counter.textContent) + delta;
+            if (currentValue < 0) return;
+            counter.textContent = currentValue;
+            currentSelection.details[teacher] = currentValue;
+        }
+
+        function calculateTotalPrice() {
+            const total = Object.entries(currentSelection.details)
+                .reduce((sum, [teacher, count]) => sum + (count * prices.combo[teacher]), 0);
+            
+            if (total === 0) {
+                alert('Пожалуйста, выберите хотя бы одно занятие!');
+                return;
+            }
+
+            currentSelection.price = total;
+            showPaymentScreen();
+        }
+
+        function showPersonalOptions(type) {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>Выбор количества занятий</h2>
+                <select id="lessonCount">
+                    ${Object.keys(prices[type]).map(count => `<option value="${count}">${count} занятий</option>`).join('')}
+                </select>
+                <br><br>
+                <button id="continueButton" onclick="handlePersonalSelection()">Продолжить</button>
+            `;
+            showModal();
+        }
+
+        function handlePersonalSelection() {
+            const lessonCount = document.getElementById('lessonCount').value;
+            currentSelection.price = prices[currentSelection.type][lessonCount];
+            showPaymentScreen();
+        }
+
+        function showPaymentScreen() {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>Оформление заявки</h2>
+                <input type="text" id="contactInput" placeholder="Ваш телефон или Telegram">
+                <div class="price-display">
+                    Сумма к оплате: ${currentSelection.price}₽
+                </div>
+                <button id="confirmButton" onclick="submitApplication()">Отправить заявку</button>
+            `;
+            showModal();
+        }
+
+        async function submitApplication() {
+            const contact = document.getElementById('contactInput').value.trim();
+            if (!contact) {
+                alert('Пожалуйста, введите контактные данные!');
+                return;
+            }
+
+            try {
+                let message = `🎸 Новая заявка!\n\n`;
+                message += `📌 Тип: ${getSubscriptionName(currentSelection.type)}\n`;
+                message += `📞 Контакт: ${contact}\n`;
+                message += `💰 Сумма: ${currentSelection.price}₽\n`;
+
+                if (currentSelection.type === 'combo') {
+                    message += `\n👨🏫 Распределение занятий:\n`;
+                    message += Object.entries(currentSelection.details)
+                        .map(([teacher, count]) => `${teacher.charAt(0).toUpperCase() + teacher.slice(1)}: ${count} занятий`)
+                        .join('\n');
+                }
+
+                if (currentSelection.type.includes('personal')) {
+                    const lessons = document.getElementById('lessonCount').value;
+                    message += `\n🎯 Количество занятий: ${lessons}`;
+                }
+
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: ADMIN_CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+
+                if (currentSelection.type === 'trial') {
+                    document.getElementById('modalContent').innerHTML = `
+                        <h2>🎉 Заявка принята!</h2>
+                        <p>Теперь выберите удобное время для занятия:</p>
+                        <a href="https://n1328752.yclients.com/company/1196378/personal/menu?o=m3619690s18100919" 
+                           target="_blank" 
+                           class="time-select-btn">
+                            Перейти к выбору времени
+                        </a>
+                        <button onclick="closeModal()" class="nav-btn">Закрыть</button>
+                    `;
+                } else {
+                    alert('✅ Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
+                    closeModal();
+                }
+
+            } catch (error) {
+                console.error('Ошибка отправки:', error);
+                alert('⚠️ Произошла ошибка при отправке. Пожалуйста, свяжитесь с нами напрямую.');
+            }
+        }
+
+        function getSubscriptionName(type) {
+            const names = {
+                trial: 'Бесплатное пробное занятие',
+                personal1: 'Личный абонемент (1 месяц)',
+                personal3: 'Личный абонемент (2 месяца)',
+                pair: 'Парный абонемент',
+                combo: 'Комбо абонемент',
+                video_course: 'Видеокурс'
+            };
+            return names[type] || type;
+        }
+
+        function showModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            currentSelection = { type: null, details: {}, price: 0 };
+        }
+    </script>
+</body>
+</html>
